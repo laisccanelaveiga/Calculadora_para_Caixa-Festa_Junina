@@ -370,10 +370,24 @@
   .history-item-top{
     display:flex;
     justify-content:space-between;
+    align-items:center;
     font-weight:700;
     margin-bottom:3px;
+    gap:8px;
   }
-  .history-item-top .val{ color:var(--yellow); }
+  .history-item-top .val{ color:var(--yellow); flex:1; text-align:right; margin-right:8px; }
+  .history-del-btn{
+    background:var(--surface-3);
+    border:none;
+    color:var(--text-muted);
+    width:24px; height:24px;
+    border-radius:50%;
+    font-size:0.85rem;
+    line-height:1;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .history-del-btn:active{ background:var(--red); color:#fff; }
   .history-item-detail{ color:var(--text-muted); font-size:0.78rem; }
   .history-empty{
     color:var(--text-muted);
@@ -438,10 +452,7 @@
   </section>
 
   <section>
-    <div class="section-title">
-      Histórico do dia
-      <button class="link-btn" id="clearHistory">Zerar histórico</button>
-    </div>
+    <div class="section-title">Histórico do dia</div>
     <div class="history-summary">
       <span>Total vendido hoje</span>
       <span class="n" id="dayTotal">R$ 0,00</span>
@@ -750,21 +761,20 @@ function renderHistory(){
       <div class="history-item-top">
         <span>${h.time}</span>
         <span class="val">${fmt(h.total)}</span>
+        <button class="history-del-btn" title="Excluir venda">✕</button>
       </div>
       <div class="history-item-detail">${detail}</div>
     `;
+    div.querySelector('.history-del-btn').addEventListener('click', () => {
+      if(confirm('Excluir esta venda do histórico? Essa ação não pode ser desfeita.')){
+        history = history.filter(x => x.id !== h.id);
+        saveState();
+        renderHistory();
+      }
+    });
     list.appendChild(div);
   });
 }
-
-document.getElementById('clearHistory').addEventListener('click', () => {
-  if(history.length === 0) return;
-  if(confirm('Zerar todo o histórico de vendas do dia? Essa ação não pode ser desfeita.')){
-    history = [];
-    saveState();
-    renderHistory();
-  }
-});
 
 // ---------- Init ----------
 loadState();
